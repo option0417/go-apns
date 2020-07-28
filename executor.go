@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"tw.com.wd/push/apns/cert"
-	"tw.com.wd/push/apns/notify"
+	//"tw.com.wd/push/apns/push"
 )
 
 func main() {
-
 	var filePath = "apns_test.p12"
 	tlsCert, err := cert.ReadP12FromFile(filePath, "86136982")
 
@@ -20,5 +19,5 @@ func main() {
 	var topic = "com.mitake.mitakeeim"
 	var payload = "{\"aps\":{\"alert\":\"Hello\"}}"
 
-	notify.Push(token, topic, payload, tlsCert)
+	//push.BuildPushClient(token, topic, payload, tlsCert)
 }

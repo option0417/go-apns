@@ -1,6 +1,11 @@
-package http
+package push
 
-import "fmt"
+import (
+	"crypto/tls"
+	//"fmt"
+	"golang.org/x/net/http2"
+	"net/http"
+)
 
 const (
 	Method_POST   = "POST"
@@ -8,6 +13,10 @@ const (
 	Method_PUT    = "PUT"
 	Method_DELETE = "DELETE"
 )
+
+func FetchHttpClient() *http.Client {
+	return &http.Client{}
+}
 
 func buildRequest(method, url string) (*http.Request, error) {
 	req, err := http.NewRequest(method, url, nil)
