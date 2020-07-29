@@ -4,7 +4,7 @@ import (
 	"fmt"
 	//"tw.com.wd/push/apns/cert"
 	"tw.com.wd/push/apns/common"
-	//"tw.com.wd/push/apns/push"
+	"tw.com.wd/push/apns/push"
 )
 
 func main() {
@@ -27,6 +27,11 @@ func main() {
 	fmt.Printf("Token: %v\n", common.Token_OK)
 	fmt.Printf("Topic: %v\n", common.TOPIC)
 	fmt.Printf("Payload: %v\n", common.PAYLOAD_A)
+
+	pcb := push.BuildPushClient()
+
+	pcb.Production()
+	fmt.Printf("%t, %p\n", pcb)
 
 	// Build payload
 	// payload.PayloadBuilder().tokens([1]string{token}).topic(topic).payload(
