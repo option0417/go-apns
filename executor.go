@@ -25,20 +25,19 @@ func main() {
 	*/
 
 	fmt.Printf("Token: %v\n", common.Token_OK)
-	fmt.Printf("Topic: %v\n", common.TOPIC)
 	fmt.Printf("Payload: %v\n", common.PAYLOAD_A)
-
-	pcb := push.BuildPushClient()
-
-	pcb.Production()
-	fmt.Printf("%t, %p\n", pcb)
 
 	// Build payload
 	// payload.PayloadBuilder().tokens([1]string{token}).topic(topic).payload(
 
 	// Build PushClient
-	//push.BuildPushClient(token, topic, payload, tlsCert)
+	pc := push.
+		BuildPushClient().
+		Tokens([]string{common.Token_OK}).
+		Payload(common.PAYLOAD_A).
+		Production().
+		Build()
 
 	// Do Push
-
+	pc.Push()
 }
