@@ -1,10 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
-	"tw.com.wd/push/apns/push"
+	//"tw.com.wd/push/apns/common"
+	//"tw.com.wd/push/apns/push"
 )
 
 func main() {
@@ -38,17 +39,25 @@ func main() {
 		IsContentAvailable(true).
 		IsMutableContent(true)
 
-	fmt.Printf("%t, %v\n", pb)
-	fmt.Printf("%t, %v\n", pb.Build())
+	p := pb.Build()
+	fmt.Printf("Type: %t\nValue: %v\n", p, *p)
+
+	pJson, err := json.Marshal(p)
+
+	if err == nil {
+		fmt.Println(string(pJson))
+	}
 
 	// Build PushClient
-	pc := push.
-		BuildPushClient().
-		Tokens([]string{common.Token_OK}).
-		Payload(common.PAYLOAD_A).
-		Production().
-		Build()
+	/*
+		pc := push.
+			BuildPushClient().
+			Tokens([]string{common.Token_OK}).
+			Payload(common.PAYLOAD_A).
+			Production().
+			Build()
 
-	// Do Push
-	pc.Push()
+		// Do Push
+		pc.Push()
+	*/
 }
