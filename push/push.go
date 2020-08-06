@@ -4,9 +4,35 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"time"
 	"tw.com.wd/push/apns/cert"
 	"tw.com.wd/push/apns/common"
 )
+
+type PushType string
+
+const (
+	PushTypeAlert        PushType = "alert"
+	PushTypeBackground   PushType = "background"
+	PushTypeVoip         PushType = "voip"
+	PushTypeComplication PushType = "complication"
+	PushTypeFileProvider PushType = "fileprovider"
+	PushTypeMdm          PushType = "mdm"
+)
+
+type PushClient struct {
+	tokens     []string
+	payload    string
+	host       string
+	pushType   PushType
+	apnsId     string
+	expiration time.Time
+	priority   int
+	topic      string
+	collapseId string
+	authToken  string
+	httpClient *http.Client
+}
 
 type PushClientBuilder struct {
 	pushClient *PushClient
@@ -39,13 +65,6 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	// Build http.Client
 
 	return pcb.pushClient
-}
-
-type PushClient struct {
-	tokens     []string
-	payload    string
-	host       string
-	httpClient *http.Client
 }
 
 func (pc *PushClient) Push() {
