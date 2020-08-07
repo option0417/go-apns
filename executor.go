@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
-	//"tw.com.wd/push/apns/common"
-	//"tw.com.wd/push/apns/push"
+	"tw.com.wd/push/apns/push"
 )
 
 func main() {
@@ -49,15 +49,15 @@ func main() {
 	}
 
 	// Build PushClient
-	/*
-		pc := push.
-			BuildPushClient().
-			Tokens([]string{common.Token_OK}).
-			Payload(common.PAYLOAD_A).
-			Production().
-			Build()
 
-		// Do Push
-		pc.Push()
-	*/
+	pc := push.
+		BuildPushClient().
+		Tokens([]string{common.Token_OK}).
+		Payload(p).
+		Production().
+		Build()
+
+	// Do Push
+	pc.Push()
+
 }

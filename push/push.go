@@ -7,6 +7,7 @@ import (
 	"time"
 	"tw.com.wd/push/apns/cert"
 	"tw.com.wd/push/apns/common"
+	"tw.com.wd/push/apns/payload"
 )
 
 type PushType string
@@ -22,7 +23,7 @@ const (
 
 type PushClient struct {
 	tokens     []string
-	payload    string
+	payload    *payload.Payload
 	host       string
 	pushType   PushType
 	apnsId     string
@@ -43,7 +44,7 @@ func (pcb *PushClientBuilder) Tokens(tokens []string) *PushClientBuilder {
 	return pcb
 }
 
-func (pcb *PushClientBuilder) Payload(payload string) *PushClientBuilder {
+func (pcb *PushClientBuilder) Payload(payload *payload.Payload) *PushClientBuilder {
 	pcb.pushClient.payload = payload
 	return pcb
 }
