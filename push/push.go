@@ -1,9 +1,12 @@
 package push
 
 import (
+	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"golang.org/x/net/http2"
+	"io/ioutil"
 	"net/http"
 	"time"
 	"tw.com.wd/push/apns/cert"
@@ -56,6 +59,11 @@ func (pcb *PushClientBuilder) Payload(payload *payload.Payload) *PushClientBuild
 }
 
 func (pcb *PushClientBuilder) Production() *PushClientBuilder {
+	pcb.pushClient.host = common.APNS_PRODUCTION_SERVER
+	return pcb
+}
+
+func (pcb *PushClientBuilder) Development() *PushClientBuilder {
 	pcb.pushClient.host = common.APNS_DEVELOPMENT_SERVER
 	return pcb
 }
@@ -81,6 +89,8 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	}
 	pcb.pushClient.httpClient = httpClient
 
+	pcb.pushClient.topic = common.TOPIC
+
 	return pcb.pushClient
 }
 
@@ -90,34 +100,68 @@ func (pc *PushClient) Push() {
 
 	payloadJson, err := json.Marshal(pc.payload)
 	if err != nil {
-		fmt.printf("Err: %v\n", err)
+		fmt.Printf("Err: %v\n", err)
 	}
+	fmt.Printf("\nJSON: %v\n", string(payloadJson))
+	fmt.Printf("Token: %v\n", pc.tokens[0])
 
-	url := fmt.Sprintf("%v/3/device/%v", pc.host, n.DeviceToken)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	pJson := "{\"Aps\":{\"Alert\":{\"Title\":\"Title\",\"SubTitle\":\"SubTitle\",\"Body\":\"Body\"},\"Badge\":3,\"Sound\":{\"Critical\":1,\"Name\":\"sound_name\",\"Volume\":0.5}}}"
+
+	url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[0])
+	//req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(pJson)))
 	if err != nil {
-		return nil, err
+		fmt.Printf("Err: %v\n", err)
 	}
 
-	if c.Token != nil {
-		c.setTokenHeader(req)
+	if pc.authToken != "" {
+		//c.setTokenHeader(req)
+		fmt.Printf("AuthToken: %v\n", pc.authToken)
 	}
 
-	setHeaders(req, n)
+	setupHeaders(req, pc)
+	fmt.Printf("Headers: %v\n", req.Header)
+	fmt.Printf("Req: %v\n", req)
 
-	httpRes, err := c.requestWithContext(ctx, req)
+	resp, err := pc.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Printf("Err: %v\n", err)
 	}
-	defer httpRes.Body.Close()
+	fmt.Printf("Resp: %v\n", resp)
 
-	response := &Response{}
-	response.StatusCode = httpRes.StatusCode
-	response.ApnsID = httpRes.Header.Get("apns-id")
+	respBody, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 
-	decoder := json.NewDecoder(httpRes.Body)
-	if err := decoder.Decode(&response); err != nil && err != io.EOF {
-		return &Response{}, err
+	fmt.Printf("RespBody: %s\n", respBody)
+
+	//setHeaders(req, n)
+
+	/*
+		httpRes, err := c.requestWithContext(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		defer httpRes.Body.Close()
+
+		response := &Response{}
+		response.StatusCode = httpRes.StatusCode
+		response.ApnsID = httpRes.Header.Get("apns-id")
+
+		decoder := json.NewDecoder(httpRes.Body)
+		if err := decoder.Decode(&response); err != nil && err != io.EOF {
+			return &Response{}, err
+		}
+		return response, nil
+	*/
+}
+
+func setupHeaders(req *http.Request, pc *PushClient) {
+	req.Header.Set("Content-Type", "applicatiob/json; charset=utf-8")
+	req.Header.Set("apns-topic", pc.topic)
+
+	if pc.pushType != "" {
+		req.Header.Set("apns-push-type", string(pc.pushType))
+	} else {
+		req.Header.Set("apns-push-type", string(PushTypeAlert))
 	}
-	return response, nil
 }

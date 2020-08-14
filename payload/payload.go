@@ -53,6 +53,10 @@ func BuildPayload() *PayloadBuilder {
 func (pb *PayloadBuilder) Build() *Payload {
 	pb.payload.Aps.Alert = pb.payload.Alert
 	pb.payload.Aps.Sound = pb.payload.Sound
+
+	pb.payload.Alert = nil
+	pb.payload.Sound = nil
+
 	return pb.payload
 }
 
