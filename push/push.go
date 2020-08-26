@@ -73,6 +73,7 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
+		return nil
 	}
 
 	// Build TLSConfig
@@ -101,17 +102,22 @@ func (pc *PushClient) Push() {
 	payloadJson, err := json.Marshal(pc.payload)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
+		return
 	}
-	fmt.Printf("\nJSON: %v\n", string(payloadJson))
-	fmt.Printf("Token: %v\n", pc.tokens[0])
 
-	pJson := "{\"Aps\":{\"Alert\":{\"Title\":\"Title\",\"SubTitle\":\"SubTitle\",\"Body\":\"Body\"},\"Badge\":3,\"Sound\":{\"Critical\":1,\"Name\":\"sound_name\",\"Volume\":0.5}}}"
+	fmt.Printf("JSON: %v\n\n", string(payloadJson))
+	fmt.Printf("Token: %v\n\n", pc.tokens[0])
+
+	pJson := "{\"aps\":{\"alert\":{\"title\":\"Title\",\"subtitle\":\"SubTitle\",\"body\":\"Body\"},\"badge\":3,\"Sound\":{\"Critical\":1,\"name\":\"\",\"volume\":null}}}"
+	//pJson := "{\"aps\":{\"alert\":{\"title\":\"Title\",\"subtitle\":\"SubTitle\",\"body\":\"Body\"}}}"
+	fmt.Printf("JSON: %v\n\n", pJson)
 
 	url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[0])
 	//req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(pJson)))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
+		return
 	}
 
 	if pc.authToken != "" {
@@ -120,19 +126,20 @@ func (pc *PushClient) Push() {
 	}
 
 	setupHeaders(req, pc)
-	fmt.Printf("Headers: %v\n", req.Header)
-	fmt.Printf("Req: %v\n", req)
+	fmt.Printf("Headers: %v\n\n", req.Header)
+	fmt.Printf("Req: %v\n\n", req)
 
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
+		return
 	}
-	fmt.Printf("Resp: %v\n", resp)
+	fmt.Printf("Resp: %v\n\n", resp)
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 
-	fmt.Printf("RespBody: %s\n", respBody)
+	fmt.Printf("RespBody: %s\n\n", respBody)
 
 	//setHeaders(req, n)
 
