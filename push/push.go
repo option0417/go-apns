@@ -108,13 +108,8 @@ func (pc *PushClient) Push() {
 	fmt.Printf("JSON: %v\n\n", string(payloadJson))
 	fmt.Printf("Token: %v\n\n", pc.tokens[0])
 
-	pJson := "{\"aps\":{\"alert\":{\"title\":\"Title\",\"subtitle\":\"SubTitle\",\"body\":\"Body\"},\"badge\":3,\"Sound\":{\"Critical\":1,\"name\":\"\",\"volume\":null}}}"
-	//pJson := "{\"aps\":{\"alert\":{\"title\":\"Title\",\"subtitle\":\"SubTitle\",\"body\":\"Body\"}}}"
-	fmt.Printf("JSON: %v\n\n", pJson)
-
 	url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[0])
-	//req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(pJson)))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return
