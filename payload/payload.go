@@ -6,6 +6,7 @@ type PayloadBuilder struct {
 
 type Payload struct {
 	Aps *Aps `json:"aps, omitempty"`
+    
 }
 
 // Apple-defined keys
@@ -101,52 +102,52 @@ func (pb *PayloadBuilder) SetTargetContentId(targetContentId string) *PayloadBui
 }
 
 // Method for Alert
-func (pb *PayloadBuilder) SetTitle(title string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertTitle(title string) *PayloadBuilder {
 	pb.payload.Aps.Alert.Title = title
 	return pb
 }
 
-func (pb *PayloadBuilder) SetSubTitle(subTitle string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertSubTitle(subTitle string) *PayloadBuilder {
 	pb.payload.Aps.Alert.SubTitle = subTitle
 	return pb
 }
 
-func (pb *PayloadBuilder) SetBody(body string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertBody(body string) *PayloadBuilder {
 	pb.payload.Aps.Alert.Body = body
 	return pb
 }
 
-func (pb *PayloadBuilder) SetLaunchImageName(launchImage string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertLaunchImageName(launchImage string) *PayloadBuilder {
 	pb.payload.Aps.Alert.LaunchImage = launchImage
 	return pb
 }
 
-func (pb *PayloadBuilder) SetTitleLocKey(titleLocKey string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertTitleLocKey(titleLocKey string) *PayloadBuilder {
 	pb.payload.Aps.Alert.TitleLocKey = titleLocKey
 	return pb
 }
 
-func (pb *PayloadBuilder) SetTitleLocArgs(titleLocArgs []string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertTitleLocArgs(titleLocArgs []string) *PayloadBuilder {
 	pb.payload.Aps.Alert.TitleLocArgs = titleLocArgs
 	return pb
 }
 
-func (pb *PayloadBuilder) SetSubTitleLocKey(subTitleKey string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertSubTitleLocKey(subTitleKey string) *PayloadBuilder {
 	pb.payload.Aps.Alert.SubTitleLocKey = subTitleKey
 	return pb
 }
 
-func (pb *PayloadBuilder) SetSubTitleLocArgs(subTitleLocArgs []string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertSubTitleLocArgs(subTitleLocArgs []string) *PayloadBuilder {
 	pb.payload.Aps.Alert.SubTitleLocArgs = subTitleLocArgs
 	return pb
 }
 
-func (pb *PayloadBuilder) SetLocKey(locKey string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertLocKey(locKey string) *PayloadBuilder {
 	pb.payload.Aps.Alert.LocKey = locKey
 	return pb
 }
 
-func (pb *PayloadBuilder) SetLocArgs(locArgs []string) *PayloadBuilder {
+func (pb *PayloadBuilder) SetAlertLocArgs(locArgs []string) *PayloadBuilder {
 	pb.payload.Aps.Alert.LocArgs = locArgs
 	return pb
 }
@@ -170,3 +171,8 @@ func (pb *PayloadBuilder) SetVolume(volume float32) *PayloadBuilder {
 	pb.payload.Aps.Sound.Volume = volume
 	return pb
 }
+
+// Method for Custom Property
+func ([b *PayloadBuilder) SetCustomProperty(key string, value interface{}) *PayloadBuilder {
+  pb.payload.
+

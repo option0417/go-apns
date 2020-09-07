@@ -17,15 +17,15 @@ func main() {
 		SetTitle("Title").
 		SetSubTitle("SubTitle").
 		SetBody("Body")
-		/*
-			SetLaunchImageName("launch_image").
-			SetTitleLocKey("title_loc_key").
-			SetTitleLocArgs([]string{"title_loc_arg1", "title_loc_arg2"}).
-			SetSubTitleLocKey("sub_title_loc_key").
-			SetSubTitleLocArgs([]string{"sub_title_loc_arg1", "sub_title_loc_arg2"}).
-			SetLocKey("loc_key").
-			SetLocArgs([]string{"loc_arg1", "loc_arg2"})
-		*/
+	/*
+		SetLaunchImageName("launch_image").
+		SetTitleLocKey("title_loc_key").
+		SetTitleLocArgs([]string{"title_loc_arg1", "title_loc_arg2"}).
+		SetSubTitleLocKey("sub_title_loc_key").
+		SetSubTitleLocArgs([]string{"sub_title_loc_arg1", "sub_title_loc_arg2"}).
+		SetLocKey("loc_key").
+		SetLocArgs([]string{"loc_arg1", "loc_arg2"})
+	*/
 
 	// Setup Sound
 	pb.
