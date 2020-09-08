@@ -5,8 +5,7 @@ type PayloadBuilder struct {
 }
 
 type Payload struct {
-	Aps *Aps `json:"aps, omitempty"`
-    
+	content map[string]interface{}
 }
 
 // Apple-defined keys
@@ -42,7 +41,13 @@ type Sound struct {
 
 // Methods for PayloadBuilder
 func BuildPayload() *PayloadBuilder {
-	return &PayloadBuilder{&Payload{&Aps{Alert: &Alert{}, Sound: &Sound{}}}}
+	return &PayloadBuilder{
+		&Payload{
+			map[string]interface{}{
+				"aps": &Aps{Alert: &Alert{}, Sound: &Sound{}},
+			},
+		},
+	}
 }
 
 func (pb *PayloadBuilder) Build() *Payload {
@@ -51,20 +56,20 @@ func (pb *PayloadBuilder) Build() *Payload {
 
 // Methods for Payload
 func (p *Payload) GetAps() *Aps {
-	return p.Aps
+	return p.content["aps"]
 }
 
 func (p *Payload) GetAlert() *Alert {
-	return p.Aps.Alert
+	return p.GetAps().Alert
 }
 
 func (p *Payload) GetSound() *Sound {
-	return p.Aps.Sound
+	return p.GetAps().Sound
 }
 
 // Method for Aps
 func (pb *PayloadBuilder) Badge(count int) *PayloadBuilder {
-	pb.payload.Aps.Badge = count
+	pb.payload.GetAps().Badge = count
 	return pb
 }
 
@@ -173,6 +178,3 @@ func (pb *PayloadBuilder) SetVolume(volume float32) *PayloadBuilder {
 }
 
 // Method for Custom Property
-func ([b *PayloadBuilder) SetCustomProperty(key string, value interface{}) *PayloadBuilder {
-  pb.payload.
-
