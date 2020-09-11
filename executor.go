@@ -14,9 +14,9 @@ func main() {
 
 	// Setup Alert
 	pb.
-		SetTitle("Title").
-		SetSubTitle("SubTitle").
-		SetBody("Body")
+		SetAlertTitle("Title").
+		SetAlertSubTitle("SubTitle").
+		SetAlertBody("Body")
 	/*
 		SetLaunchImageName("launch_image").
 		SetTitleLocKey("title_loc_key").
@@ -41,14 +41,22 @@ func main() {
 		//		IsContentAvailable(true).
 		//		IsMutableContent(true)
 
+	// Setup Custom Properties
+	pb.
+		SetCustomProperty("ptp", 2).
+		SetCustomProperty("gi", "G000000800V").
+		SetCustomProperty("ci", "T000002X039")
+
 	p := pb.Build()
 	// Build PushClient
 
 	pc := push.
 		BuildPushClient().
-		Tokens([]string{common.Token_OK}).
+		Tokens([]string{common.Token_VOIP}).
 		Payload(p).
 		Production().
+		PushType(push.PushTypeVoip).
+		Topic("com.mitake.mitakeeim.voip").
 		Build()
 
 	// Do Push

@@ -56,7 +56,7 @@ func (pb *PayloadBuilder) Build() *Payload {
 
 // Methods for Payload
 func (p *Payload) GetAps() *Aps {
-	return p.content["aps"]
+	return p.content["aps"].(*Aps)
 }
 
 func (p *Payload) GetAlert() *Alert {
@@ -67,6 +67,10 @@ func (p *Payload) GetSound() *Sound {
 	return p.GetAps().Sound
 }
 
+func (p *Payload) GetContent() map[string]interface{} {
+	return p.content
+}
+
 // Method for Aps
 func (pb *PayloadBuilder) Badge(count int) *PayloadBuilder {
 	pb.payload.GetAps().Badge = count
@@ -74,107 +78,111 @@ func (pb *PayloadBuilder) Badge(count int) *PayloadBuilder {
 }
 
 func (pb *PayloadBuilder) SetThreadId(threadId string) *PayloadBuilder {
-	pb.payload.Aps.ThreadId = threadId
+	pb.payload.GetAps().ThreadId = threadId
 	return pb
 }
 
 func (pb *PayloadBuilder) SetCategory(category string) *PayloadBuilder {
-	pb.payload.Aps.Category = category
+	pb.payload.GetAps().Category = category
 	return pb
 }
 
 func (pb *PayloadBuilder) IsContentAvailable(contentAvailable bool) *PayloadBuilder {
 	if contentAvailable {
-		pb.payload.Aps.ContentAvailable = 1
+		pb.payload.GetAps().ContentAvailable = 1
 	} else {
-		pb.payload.Aps.ContentAvailable = 0
+		pb.payload.GetAps().ContentAvailable = 0
 	}
 	return pb
 }
 
 func (pb *PayloadBuilder) IsMutableContent(mutableContent bool) *PayloadBuilder {
 	if mutableContent {
-		pb.payload.Aps.MutableContent = 1
+		pb.payload.GetAps().MutableContent = 1
 	} else {
-		pb.payload.Aps.MutableContent = 0
+		pb.payload.GetAps().MutableContent = 0
 	}
 	return pb
 }
 
 func (pb *PayloadBuilder) SetTargetContentId(targetContentId string) *PayloadBuilder {
-	pb.payload.Aps.TargetContentId = targetContentId
+	pb.payload.GetAps().TargetContentId = targetContentId
 	return pb
 }
 
 // Method for Alert
 func (pb *PayloadBuilder) SetAlertTitle(title string) *PayloadBuilder {
-	pb.payload.Aps.Alert.Title = title
+	pb.payload.GetAps().Alert.Title = title
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertSubTitle(subTitle string) *PayloadBuilder {
-	pb.payload.Aps.Alert.SubTitle = subTitle
+	pb.payload.GetAps().Alert.SubTitle = subTitle
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertBody(body string) *PayloadBuilder {
-	pb.payload.Aps.Alert.Body = body
+	pb.payload.GetAps().Alert.Body = body
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertLaunchImageName(launchImage string) *PayloadBuilder {
-	pb.payload.Aps.Alert.LaunchImage = launchImage
+	pb.payload.GetAps().Alert.LaunchImage = launchImage
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertTitleLocKey(titleLocKey string) *PayloadBuilder {
-	pb.payload.Aps.Alert.TitleLocKey = titleLocKey
+	pb.payload.GetAps().Alert.TitleLocKey = titleLocKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertTitleLocArgs(titleLocArgs []string) *PayloadBuilder {
-	pb.payload.Aps.Alert.TitleLocArgs = titleLocArgs
+	pb.payload.GetAps().Alert.TitleLocArgs = titleLocArgs
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertSubTitleLocKey(subTitleKey string) *PayloadBuilder {
-	pb.payload.Aps.Alert.SubTitleLocKey = subTitleKey
+	pb.payload.GetAps().Alert.SubTitleLocKey = subTitleKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertSubTitleLocArgs(subTitleLocArgs []string) *PayloadBuilder {
-	pb.payload.Aps.Alert.SubTitleLocArgs = subTitleLocArgs
+	pb.payload.GetAps().Alert.SubTitleLocArgs = subTitleLocArgs
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertLocKey(locKey string) *PayloadBuilder {
-	pb.payload.Aps.Alert.LocKey = locKey
+	pb.payload.GetAps().Alert.LocKey = locKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetAlertLocArgs(locArgs []string) *PayloadBuilder {
-	pb.payload.Aps.Alert.LocArgs = locArgs
+	pb.payload.GetAps().Alert.LocArgs = locArgs
 	return pb
 }
 
 // Method for Sound
 func (pb *PayloadBuilder) IsCritical(isCritical bool) *PayloadBuilder {
 	if isCritical {
-		pb.payload.Aps.Sound.Critical = 1
+		pb.payload.GetAps().Sound.Critical = 1
 	} else {
-		pb.payload.Aps.Sound.Critical = 0
+		pb.payload.GetAps().Sound.Critical = 0
 	}
 	return pb
 }
 
 func (pb *PayloadBuilder) SetSoundName(soundName string) *PayloadBuilder {
-	pb.payload.Aps.Sound.Name = soundName
+	pb.payload.GetAps().Sound.Name = soundName
 	return pb
 }
 
 func (pb *PayloadBuilder) SetVolume(volume float32) *PayloadBuilder {
-	pb.payload.Aps.Sound.Volume = volume
+	pb.payload.GetAps().Sound.Volume = volume
 	return pb
 }
 
 // Method for Custom Property
+func (pb *PayloadBuilder) SetCustomProperty(key string, val interface{}) *PayloadBuilder {
+	pb.payload.content[key] = val
+	return pb
+}

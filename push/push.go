@@ -48,6 +48,16 @@ func BuildPushClient() *PushClientBuilder {
 	return &PushClientBuilder{&PushClient{}}
 }
 
+func (pcb *PushClientBuilder) Topic(topic string) *PushClientBuilder {
+	pcb.pushClient.topic = topic
+	return pcb
+}
+
+func (pcb *PushClientBuilder) PushType(pushType PushType) *PushClientBuilder {
+	pcb.pushClient.pushType = pushType
+	return pcb
+}
+
 func (pcb *PushClientBuilder) Tokens(tokens []string) *PushClientBuilder {
 	pcb.pushClient.tokens = tokens
 	return pcb
@@ -90,8 +100,6 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	}
 	pcb.pushClient.httpClient = httpClient
 
-	pcb.pushClient.topic = common.TOPIC
-
 	return pcb.pushClient
 }
 
@@ -99,7 +107,7 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 func (pc *PushClient) Push() {
 	fmt.Printf("Do Push\n")
 
-	payloadJson, err := json.Marshal(pc.payload)
+	payloadJson, err := json.Marshal(pc.payload.GetContent())
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return
