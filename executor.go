@@ -3,7 +3,7 @@ package main
 import (
 	//	"encoding/json"
 	//	"fmt"
-	"tw.com.wd/push/apns/common"
+	//"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
 	"tw.com.wd/push/apns/push"
 )
@@ -14,8 +14,8 @@ func main() {
 
 	// Setup Alert
 	pb.
-		SetAlertTitle("Title").
-		SetAlertSubTitle("SubTitle").
+		//	SetAlertTitle("Title").
+		//	SetAlertSubTitle("SubTitle").
 		SetAlertBody("Body")
 	/*
 		SetLaunchImageName("launch_image").
@@ -29,9 +29,9 @@ func main() {
 
 	// Setup Sound
 	pb.
-		SetSoundName("sound_name").
-		SetVolume(0.5).
-		IsCritical(true)
+		SetSoundName("ringtone_006.mp3")
+		//SetVolume(0.5).
+		//IsCritical(true)
 
 	// Setup Aps
 	pb.
@@ -45,18 +45,24 @@ func main() {
 	pb.
 		SetCustomProperty("ptp", 2).
 		SetCustomProperty("gi", "G000000800V").
-		SetCustomProperty("ci", "T000002X039")
+		SetCustomProperty("ei", "G000000800V_T000002H04S_E00001p10Dx").
+		SetCustomProperty("ti", "T000002H04S").
+		SetCustomProperty("v", 1).
+		SetCustomProperty("v2", 1).
+		SetCustomProperty("tp", "00").
+		SetCustomProperty("ptp", 1).
+		SetCustomProperty("s2", 1)
 
 	p := pb.Build()
 	// Build PushClient
 
 	pc := push.
 		BuildPushClient().
-		Tokens([]string{common.Token_VOIP}).
+		Tokens([]string{"19e8ca26952adbd37328e1317b172f8250ed82d0d77edec3a1f3347ecadc6e1d"}).
 		Payload(p).
 		Production().
 		PushType(push.PushTypeVoip).
-		Topic("com.mitake.mitakeeim.voip").
+		Topic("com.mitake.mitakeeim").
 		Build()
 
 	// Do Push
