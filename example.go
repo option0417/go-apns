@@ -12,8 +12,8 @@ func main() {
 	var filePath = "apns_test.p12"
 	tlsCert, err := cert.ReadP12FromFile(filePath, "86136982")
 
-	var token = "0b02a92dc35d2bd297988b75ead46c356ff8aceb589ee032773eff85d9c1a952"
-	var topic = "com.mitake.mitakeeim"
+	var token = "37ff4e443603b62b1a1ece9e078efc07b48a7ef64477bd4d861265cb18d9702c"
+	var topic = "tw.com.mitake.mitakeeim"
 	var payload = "{\"aps\":{\"alert\":\"Hello\"}}"
 
 	notification := &apns2.Notification{}

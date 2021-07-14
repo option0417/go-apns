@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
@@ -10,7 +9,10 @@ import (
 
 func main() {
 	// Build payload
-	pb := payload.BuildPayload()
+	pb := payload.NewPayloadBuilder()
+
+	// Setup string alert
+	pb.SetAlert("Hello Go APNS")
 
 	// Setup Alert
 	pb.
@@ -42,22 +44,11 @@ func main() {
 	p := pb.Build()
 	fmt.Printf("Type: %t\nValue: %v\n", p, *p)
 
-	pJson, err := json.Marshal(p)
-
-	if err == nil {
-		fmt.Println(string(pJson))
-	}
-
-	// Build PushClient
-
-	pc := push.
-		BuildPushClient().
+	// Setup PushClient and do push
+	push.
+		FetchPushClient().
 		Tokens([]string{common.Token_OK}).
 		Payload(p).
 		Production().
-		Build()
-
-	// Do Push
-	pc.Push()
-
+		Push()
 }

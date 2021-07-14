@@ -9,16 +9,14 @@ type PayloadBuilder struct {
 }
 
 type Payload struct {
-	Aps   *Aps
-	Alert *Alert
-	Sound *Sound
+	Aps *Aps
 }
 
 // Apple-defined keys
 type Aps struct {
 	Alert            *Alert
-	Badge            int
 	Sound            *Sound
+	Badge            int
 	ThreadId         string
 	Category         string
 	ContentAvailable int
@@ -46,13 +44,11 @@ type Sound struct {
 }
 
 // Methods for PayloadBuilder
-func BuildPayload() *PayloadBuilder {
-	return &PayloadBuilder{&Payload{&Aps{}, &Alert{}, &Sound{}}}
+func NewPayloadBuilder() *PayloadBuilder {
+	return &PayloadBuilder{&Payload{&Aps{Alert: &Alert{}, Sound: &Sound{}}}}
 }
 
 func (pb *PayloadBuilder) Build() *Payload {
-	pb.payload.Aps.Alert = pb.payload.Alert
-	pb.payload.Aps.Sound = pb.payload.Sound
 	return pb.payload
 }
 
@@ -62,11 +58,11 @@ func (p *Payload) GetAps() *Aps {
 }
 
 func (p *Payload) GetAlert() *Alert {
-	return p.Alert
+	return p.Aps.Alert
 }
 
 func (p *Payload) GetSound() *Sound {
-	return p.Sound
+	return p.Aps.Sound
 }
 
 // Method for Aps
@@ -109,73 +105,78 @@ func (pb *PayloadBuilder) SetTargetContentId(targetContentId string) *PayloadBui
 }
 
 // Method for Alert
+func (pb *PayloadBuilder) SetAlert(alert string) *PayloadBuilder {
+	pb.payload.Aps.Alert.Body = alert
+	return pb
+}
+
 func (pb *PayloadBuilder) SetTitle(title string) *PayloadBuilder {
-	pb.payload.Alert.Title = title
+	pb.payload.Aps.Alert.Title = title
 	return pb
 }
 
 func (pb *PayloadBuilder) SetSubTitle(subTitle string) *PayloadBuilder {
-	pb.payload.Alert.SubTitle = subTitle
+	pb.payload.Aps.Alert.SubTitle = subTitle
 	return pb
 }
 
 func (pb *PayloadBuilder) SetBody(body string) *PayloadBuilder {
-	pb.payload.Alert.Body = body
+	pb.payload.Aps.Alert.Body = body
 	return pb
 }
 
 func (pb *PayloadBuilder) SetLaunchImageName(launchImage string) *PayloadBuilder {
-	pb.payload.Alert.LaunchImage = launchImage
+	pb.payload.Aps.Alert.LaunchImage = launchImage
 	return pb
 }
 
 func (pb *PayloadBuilder) SetTitleLocKey(titleLocKey string) *PayloadBuilder {
-	pb.payload.Alert.TitleLocKey = titleLocKey
+	pb.payload.Aps.Alert.TitleLocKey = titleLocKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetTitleLocArgs(titleLocArgs []string) *PayloadBuilder {
-	pb.payload.Alert.TitleLocArgs = titleLocArgs
+	pb.payload.Aps.Alert.TitleLocArgs = titleLocArgs
 	return pb
 }
 
 func (pb *PayloadBuilder) SetSubTitleLocKey(subTitleKey string) *PayloadBuilder {
-	pb.payload.Alert.SubTitleLocKey = subTitleKey
+	pb.payload.Aps.Alert.SubTitleLocKey = subTitleKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetSubTitleLocArgs(subTitleLocArgs []string) *PayloadBuilder {
-	pb.payload.Alert.SubTitleLocArgs = subTitleLocArgs
+	pb.payload.Aps.Alert.SubTitleLocArgs = subTitleLocArgs
 	return pb
 }
 
 func (pb *PayloadBuilder) SetLocKey(locKey string) *PayloadBuilder {
-	pb.payload.Alert.LocKey = locKey
+	pb.payload.Aps.Alert.LocKey = locKey
 	return pb
 }
 
 func (pb *PayloadBuilder) SetLocArgs(locArgs []string) *PayloadBuilder {
-	pb.payload.Alert.LocArgs = locArgs
+	pb.payload.Aps.Alert.LocArgs = locArgs
 	return pb
 }
 
-// Nethod for Sound
+// Method for Sound
 func (pb *PayloadBuilder) IsCritical(isCritical bool) *PayloadBuilder {
 	if isCritical {
-		pb.payload.Sound.Critical = 1
+		pb.payload.Aps.Sound.Critical = 1
 	} else {
-		pb.payload.Sound.Critical = 0
+		pb.payload.Aps.Sound.Critical = 0
 	}
 	return pb
 }
 
 func (pb *PayloadBuilder) SetSoundName(soundName string) *PayloadBuilder {
-	pb.payload.Sound.Name = soundName
+	pb.payload.Aps.Sound.Name = soundName
 	return pb
 }
 
 func (pb *PayloadBuilder) SetVolume(volume float32) *PayloadBuilder {
-	pb.payload.Sound.Volume = volume
+	pb.payload.Aps.Sound.Volume = volume
 	return pb
 }
 

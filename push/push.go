@@ -2,6 +2,7 @@ package push
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -35,26 +36,27 @@ type PushClient struct {
 	httpClient *http.Client
 }
 
-type PushClientBuilder struct {
-	pushClient *PushClient
+// Methods for PushClient
+func FetchPushClient() *PushClient {
+	return &PushClient{}
 }
 
-func (pcb *PushClientBuilder) Tokens(tokens []string) *PushClientBuilder {
-	pcb.pushClient.tokens = tokens
-	return pcb
+func (pc *PushClient) Tokens(tokens []string) *PushClient {
+	pc.tokens = tokens
+	return pc
 }
 
-func (pcb *PushClientBuilder) Payload(payload *payload.Payload) *PushClientBuilder {
-	pcb.pushClient.payload = payload
-	return pcb
+func (pc *PushClient) Payload(payload *payload.Payload) *PushClient {
+	pc.payload = payload
+	return pc
 }
 
-func (pcb *PushClientBuilder) Production() *PushClientBuilder {
-	pcb.pushClient.host = common.APNS_DEVELOPMENT_SERVER
-	return pcb
+func (pc *PushClient) Production() *PushClient {
+	pc.host = common.APNS_DEVELOPMENT_SERVER
+	return pc
 }
 
-func (pcb *PushClientBuilder) Build() *PushClient {
+func (pc *PushClient) Push() {
 	// Fetch cert
 	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
 	if err != nil {
@@ -63,15 +65,11 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
 	fmt.Printf("TLS Config:%v\n", tlsConfig)
 
-	// Build http.Client
-
-	return pcb.pushClient
-}
-
-func (pc *PushClient) Push() {
+	// Do Push
 	fmt.Printf("Do Push\n")
-}
+	payloadJson, err := json.Marshal(pc.payload)
 
-func BuildPushClient() *PushClientBuilder {
-	return &PushClientBuilder{&PushClient{}}
+	if err == nil {
+		fmt.Println(string(payloadJson))
+	}
 }
