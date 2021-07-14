@@ -22,9 +22,9 @@ func ReadP12FromFile(filepath string, pw string) (tls.Certificate, error) {
 		return tls.Certificate{}, err
 	}
 
-	fmt.Printf("Subject: %s\n", cert.Subject)
-	fmt.Printf("Issuer: %v\n", cert.Issuer)
-	fmt.Printf("PriKey: %s\n", priKey)
+	//fmt.Printf("Subject: %s\n", cert.Subject)
+	//fmt.Printf("Issuer: %v\n", cert.Issuer)
+	//fmt.Printf("PriKey: %s\n", priKey)
 
 	return tls.Certificate{
 		Certificate: [][]byte{cert.Raw},

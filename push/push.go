@@ -1,12 +1,15 @@
 package push
 
 import (
-	"crypto/tls"
+	"bytes"
+	//	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	//	"golang.org/x/net/http2"
+	"io/ioutil"
 	"net/http"
 	"time"
-	"tw.com.wd/push/apns/cert"
+	//	"tw.com.wd/push/apns/cert"
 	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
 )
@@ -46,30 +49,100 @@ func (pc *PushClient) Tokens(tokens []string) *PushClient {
 	return pc
 }
 
+func (pc *PushClient) Topic(topic string) *PushClient {
+	pc.topic = topic
+	return pc
+}
+
+func (pc *PushClient) PushType(pushType PushType) *PushClient {
+	pc.pushType = pushType
+	return pc
+}
+
 func (pc *PushClient) Payload(payload *payload.Payload) *PushClient {
 	pc.payload = payload
 	return pc
 }
 
 func (pc *PushClient) Production() *PushClient {
+	pc.host = common.APNS_PRODUCTION_SERVER
+	return pc
+}
+
+func (pc *PushClient) Development() *PushClient {
 	pc.host = common.APNS_DEVELOPMENT_SERVER
 	return pc
 }
 
+// Methods for PushClinet
 func (pc *PushClient) Push() {
-	// Fetch cert
-	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
+	fmt.Printf("Do Push\n")
+
+	payloadJson, err := json.Marshal(pc.payload.GetContent())
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
+		return
 	}
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
-	fmt.Printf("TLS Config:%v\n", tlsConfig)
 
-	// Do Push
-	fmt.Printf("Do Push\n")
-	payloadJson, err := json.Marshal(pc.payload)
+	fmt.Printf("JSON: %v\n\n", string(payloadJson))
+	fmt.Printf("Token: %v\n\n", pc.tokens[0])
 
-	if err == nil {
-		fmt.Println(string(payloadJson))
+	url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[0])
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
+	if err != nil {
+		fmt.Printf("Err: %v\n", err)
+		return
+	}
+
+	if pc.authToken != "" {
+		//c.setTokenHeader(req)
+		fmt.Printf("AuthToken: %v\n", pc.authToken)
+	}
+
+	setupHeaders(req, pc)
+	fmt.Printf("Headers: %v\n\n", req.Header)
+	fmt.Printf("Req: %v\n\n", req)
+
+	resp, err := pc.httpClient.Do(req)
+	if err != nil {
+		fmt.Printf("Err: %v\n", err)
+		return
+	}
+	fmt.Printf("Resp: %v\n\n", resp)
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	fmt.Printf("RespBody: %s\n\n", respBody)
+
+	//setHeaders(req, n)
+
+	/*
+		httpRes, err := c.requestWithContext(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		defer httpRes.Body.Close()
+
+		response := &Response{}
+		response.StatusCode = httpRes.StatusCode
+		response.ApnsID = httpRes.Header.Get("apns-id")
+
+		decoder := json.NewDecoder(httpRes.Body)
+		if err := decoder.Decode(&response); err != nil && err != io.EOF {
+			return &Response{}, err
+		}
+		return response, nil
+	*/
+}
+
+func setupHeaders(req *http.Request, pc *PushClient) {
+	req.Header.Set("Content-Type", "applicatiob/json; charset=utf-8")
+	req.Header.Set("apns-topic", pc.topic)
+
+	if pc.pushType != "" {
+		req.Header.Set("apns-push-type", string(pc.pushType))
+	} else {
+		req.Header.Set("apns-push-type", string(PushTypeAlert))
 	}
 }
