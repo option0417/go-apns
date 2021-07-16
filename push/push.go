@@ -39,51 +39,48 @@ type PushClient struct {
 	httpClient *http.Client
 }
 
-type PushClientBuilder struct {
-	pushClient *PushClient
+// Methods for PushClient
+func FetchPushClient() *PushClient {
+	return &PushClient{}
 }
 
-// Methods for PushClinetBuilder
-func BuildPushClient() *PushClientBuilder {
-	return &PushClientBuilder{&PushClient{}}
+func (pc *PushClient) Tokens(tokens []string) *PushClient {
+	pc.tokens = tokens
+	return pc
 }
 
-func (pcb *PushClientBuilder) Topic(topic string) *PushClientBuilder {
-	pcb.pushClient.topic = topic
-	return pcb
+func (pc *PushClient) Topic(topic string) *PushClient {
+	pc.topic = topic
+	return pc
 }
 
-func (pcb *PushClientBuilder) PushType(pushType PushType) *PushClientBuilder {
-	pcb.pushClient.pushType = pushType
-	return pcb
+func (pc *PushClient) PushType(pushType PushType) *PushClient {
+	pc.pushType = pushType
+	return pc
 }
 
-func (pcb *PushClientBuilder) Tokens(tokens []string) *PushClientBuilder {
-	pcb.pushClient.tokens = tokens
-	return pcb
+func (pc *PushClient) Payload(payload *payload.Payload) *PushClient {
+	pc.payload = payload
+	return pc
 }
 
-func (pcb *PushClientBuilder) Payload(payload *payload.Payload) *PushClientBuilder {
-	pcb.pushClient.payload = payload
-	return pcb
+func (pc *PushClient) Production() *PushClient {
+	pc.host = common.APNS_PRODUCTION_SERVER
+	return pc
 }
 
-func (pcb *PushClientBuilder) Production() *PushClientBuilder {
-	pcb.pushClient.host = common.APNS_PRODUCTION_SERVER
-	return pcb
+func (pc *PushClient) Development() *PushClient {
+	pc.host = common.APNS_DEVELOPMENT_SERVER
+	return pc
 }
 
-func (pcb *PushClientBuilder) Development() *PushClientBuilder {
-	pcb.pushClient.host = common.APNS_DEVELOPMENT_SERVER
-	return pcb
-}
-
-func (pcb *PushClientBuilder) Build() *PushClient {
+// Methods for PushClinet
+func (pc *PushClient) buildHttpClient() {
 	// Fetch cert
 	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
-		return nil
+		return
 	}
 
 	// Build TLSConfig
@@ -98,12 +95,9 @@ func (pcb *PushClientBuilder) Build() *PushClient {
 	httpClient := &http.Client{
 		Transport: transport,
 	}
-	pcb.pushClient.httpClient = httpClient
-
-	return pcb.pushClient
+	pc.httpClient = httpClient
 }
 
-// Methods for PushClinet
 func (pc *PushClient) Push() {
 	fmt.Printf("Do Push\n")
 
@@ -132,6 +126,7 @@ func (pc *PushClient) Push() {
 	fmt.Printf("Headers: %v\n\n", req.Header)
 	fmt.Printf("Req: %v\n\n", req)
 
+	pc.buildHttpClient()
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)

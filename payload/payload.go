@@ -11,8 +11,8 @@ type Payload struct {
 // Apple-defined keys
 type Aps struct {
 	Alert            *Alert `json:"alert,omitempty"`
-	Badge            int    `json:"badge,omitempty"`
 	Sound            *Sound `json:"sound,omitempty"`
+	Badge            int    `json:"badge,omitempty"`
 	ThreadId         string `json:"thread-id,omitempty"`
 	Category         string `json:"category,omitempty"`
 	ContentAvailable int    `json:"content-available,omitempty"`
@@ -40,12 +40,10 @@ type Sound struct {
 }
 
 // Methods for PayloadBuilder
-func BuildPayload() *PayloadBuilder {
+func NewPayloadBuilder() *PayloadBuilder {
 	return &PayloadBuilder{
 		&Payload{
-			map[string]interface{}{
-				"aps": &Aps{Alert: &Alert{}, Sound: &Sound{}},
-			},
+			map[string]interface{}{"aps": &Aps{Alert: &Alert{}, Sound: &Sound{}}},
 		},
 	}
 }
@@ -111,6 +109,11 @@ func (pb *PayloadBuilder) SetTargetContentId(targetContentId string) *PayloadBui
 }
 
 // Method for Alert
+func (pb *PayloadBuilder) SetAlert(alert string) *PayloadBuilder {
+	pb.payload.GetAps().Alert.Body = alert
+	return pb
+}
+
 func (pb *PayloadBuilder) SetAlertTitle(title string) *PayloadBuilder {
 	pb.payload.GetAps().Alert.Title = title
 	return pb

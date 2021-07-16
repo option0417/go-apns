@@ -1,16 +1,17 @@
 package main
 
 import (
-	//	"encoding/json"
-	//	"fmt"
-	//"tw.com.wd/push/apns/common"
+	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
 	"tw.com.wd/push/apns/push"
 )
 
 func main() {
 	// Build payload
-	pb := payload.BuildPayload()
+	pb := payload.NewPayloadBuilder()
+
+	// Setup string alert
+	pb.SetAlert("Hello Go APNS")
 
 	// Setup Alert
 	pb.
@@ -54,18 +55,14 @@ func main() {
 		SetCustomProperty("s2", 1)
 
 	p := pb.Build()
-	// Build PushClient
 
-	pc := push.
-		BuildPushClient().
-		Tokens([]string{"19e8ca26952adbd37328e1317b172f8250ed82d0d77edec3a1f3347ecadc6e1d"}).
+	// Setup PushClient and do push
+	push.
+		FetchPushClient().
+		Tokens([]string{common.Token_OK}).
 		Payload(p).
 		Production().
-		PushType(push.PushTypeVoip).
-		Topic("com.mitake.mitakeeim").
-		Build()
-
-	// Do Push
-	pc.Push()
-
+		PushType(push.PushTypeAlert).
+		Topic(common.TOPIC).
+		Push()
 }
