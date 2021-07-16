@@ -57,6 +57,6 @@ func main() {
 		Payload(p).
 		Production().
 		PushType(push.PushTypeAlert).
-		Topic("tw.com.mitake.mitakeeim").
+		Topic(common.TOPIC).
 		Push()
 }

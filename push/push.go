@@ -2,14 +2,14 @@ package push
 
 import (
 	"bytes"
-	//	"crypto/tls"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	//	"golang.org/x/net/http2"
+	"golang.org/x/net/http2"
 	"io/ioutil"
 	"net/http"
 	"time"
-	//	"tw.com.wd/push/apns/cert"
+	"tw.com.wd/push/apns/cert"
 	"tw.com.wd/push/apns/common"
 	"tw.com.wd/push/apns/payload"
 )
@@ -75,6 +75,29 @@ func (pc *PushClient) Development() *PushClient {
 }
 
 // Methods for PushClinet
+func (pc *PushClient) buildHttpClient() {
+	// Fetch cert
+	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
+	if err != nil {
+		fmt.Printf("Err: %v\n", err)
+		return
+	}
+
+	// Build TLSConfig
+	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
+
+	// Build Transport
+	transport := &http2.Transport{
+		TLSClientConfig: tlsConfig,
+	}
+
+	// Build http.Client
+	httpClient := &http.Client{
+		Transport: transport,
+	}
+	pc.httpClient = httpClient
+}
+
 func (pc *PushClient) Push() {
 	fmt.Printf("Do Push\n")
 
@@ -103,6 +126,7 @@ func (pc *PushClient) Push() {
 	fmt.Printf("Headers: %v\n\n", req.Header)
 	fmt.Printf("Req: %v\n\n", req)
 
+	pc.buildHttpClient()
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)

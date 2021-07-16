@@ -6,7 +6,8 @@ const (
 	APNS_DEVELOPMENT_SERVER = "https://api.sandbox.push.apple.com"
 	APNS_PRODUCTION_SERVER  = "https://api.push.apple.com"
 
-	TOPIC = "tw.com.mitake.mitakeeim"
+	TOPIC      = "tw.com.mitake.mitakeeim"
+	TOPIC_VOIP = "tw.com.mitake.mitakeeim.voip"
 
 	CERT_PATH = "apns_test.p12"
 	CERT_CODE = "86136982"
