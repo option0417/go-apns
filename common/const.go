@@ -1,7 +1,5 @@
 package common
 
-//import "fmt"
-
 const (
 	APNS_DEVELOPMENT_SERVER = "https://api.sandbox.push.apple.com"
 	APNS_PRODUCTION_SERVER  = "https://api.push.apple.com"

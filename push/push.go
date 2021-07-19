@@ -74,30 +74,6 @@ func (pc *PushClient) Development() *PushClient {
 	return pc
 }
 
-// Methods for PushClinet
-func (pc *PushClient) buildHttpClient() {
-	// Fetch cert
-	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return
-	}
-
-	// Build TLSConfig
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
-
-	// Build Transport
-	transport := &http2.Transport{
-		TLSClientConfig: tlsConfig,
-	}
-
-	// Build http.Client
-	httpClient := &http.Client{
-		Transport: transport,
-	}
-	pc.httpClient = httpClient
-}
-
 func (pc *PushClient) Push() {
 	fmt.Printf("Do Push\n")
 
@@ -169,4 +145,27 @@ func setupHeaders(req *http.Request, pc *PushClient) {
 	} else {
 		req.Header.Set("apns-push-type", string(PushTypeAlert))
 	}
+}
+
+func (pc *PushClient) buildHttpClient() {
+	// Fetch cert
+	tlsCert, err := cert.ReadP12FromFile(common.CERT_PATH, common.CERT_CODE)
+	if err != nil {
+		fmt.Printf("Err: %v\n", err)
+		return
+	}
+
+	// Build TLSConfig
+	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
+
+	// Build Transport
+	transport := &http2.Transport{
+		TLSClientConfig: tlsConfig,
+	}
+
+	// Build http.Client
+	httpClient := &http.Client{
+		Transport: transport,
+	}
+	pc.httpClient = httpClient
 }
