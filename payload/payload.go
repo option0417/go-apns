@@ -69,7 +69,8 @@ func (p *Payload) GetContent() map[string]interface{} {
 	return p.content
 }
 
-// Method for Aps
+// Method for PayloadBuilder
+// Method for Aps from PayloadBuilder
 func (pb *PayloadBuilder) Badge(count int) *PayloadBuilder {
 	pb.payload.GetAps().Badge = count
 	return pb
@@ -108,7 +109,7 @@ func (pb *PayloadBuilder) SetTargetContentId(targetContentId string) *PayloadBui
 	return pb
 }
 
-// Method for Alert
+// Method for Alert from PayloadBuilder
 func (pb *PayloadBuilder) SetAlert(alert string) *PayloadBuilder {
 	pb.payload.GetAps().Alert.Body = alert
 	return pb
@@ -164,7 +165,7 @@ func (pb *PayloadBuilder) SetAlertLocArgs(locArgs []string) *PayloadBuilder {
 	return pb
 }
 
-// Method for Sound
+// Method for Sound from PayloadBuilder
 func (pb *PayloadBuilder) IsCritical(isCritical bool) *PayloadBuilder {
 	if isCritical {
 		pb.payload.GetAps().Sound.Critical = 1
@@ -184,7 +185,7 @@ func (pb *PayloadBuilder) SetVolume(volume float32) *PayloadBuilder {
 	return pb
 }
 
-// Method for Custom Property
+// Method for Custom Property from PayloadBuilder
 func (pb *PayloadBuilder) SetCustomProperty(key string, val interface{}) *PayloadBuilder {
 	pb.payload.content[key] = val
 	return pb
