@@ -21,8 +21,9 @@ func TestSendNotification(t *testing.T) {
 	resp := pushClient.Push()
 
 	if !resp.IsSuccess() {
-		t.Errorf("Send notification failed")
-
+		t.Errorf("Send notification failed, since %s", resp.GetContent())
+	} else {
+		t.Log(resp.GetContent())
 	}
 }
 
@@ -39,7 +40,8 @@ func TestSendNotificationWithWrongToken(t *testing.T) {
 	resp := pushClient.Push()
 
 	if resp.IsSuccess() {
-		t.Errorf("Send notification should fail since empty device-token")
-
+		t.Errorf("Send notification should fail since empty device-token but get %s", resp.GetContent())
+	} else {
+		t.Log(resp.GetContent())
 	}
 }

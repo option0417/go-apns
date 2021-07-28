@@ -112,12 +112,6 @@ func (pc *PushClient) Push() *PushResponse {
 		fmt.Printf("Err: %v\n", err)
 		return nil
 	}
-	fmt.Printf("Resp: %v\n\n", resp)
-
-	respBody, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	fmt.Printf("RespBody: %s\n\n", respBody)
 
 	return &PushResponse{resp}
 
@@ -177,4 +171,16 @@ func (pc *PushClient) buildHttpClient() {
 // Methods for PushResponse
 func (pushResp *PushResponse) IsSuccess() bool {
 	return pushResp.httpResp.StatusCode == 200
+}
+
+func (pushResp *PushResponse) GetContent() string {
+	defer pushResp.httpResp.Body.Close()
+	respContent, err := ioutil.ReadAll(pushResp.httpResp.Body)
+
+	if err != nil {
+		fmt.Printf("Read content error, since %v\n", err)
+		return ""
+	}
+
+	return string(respContent)
 }
