@@ -39,6 +39,10 @@ type PushClient struct {
 	httpClient *http.Client
 }
 
+type PushResponse struct {
+	httpResp *http.Response
+}
+
 // Methods for PushClient
 func FetchPushClient() *PushClient {
 	return &PushClient{}
@@ -74,13 +78,13 @@ func (pc *PushClient) Development() *PushClient {
 	return pc
 }
 
-func (pc *PushClient) Push() {
+func (pc *PushClient) Push() *PushResponse {
 	fmt.Printf("Do Push\n")
 
 	payloadJson, err := json.Marshal(pc.payload.GetContent())
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
-		return
+		return nil
 	}
 
 	fmt.Printf("JSON: %v\n\n", string(payloadJson))
@@ -90,7 +94,7 @@ func (pc *PushClient) Push() {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
-		return
+		return nil
 	}
 
 	if pc.authToken != "" {
@@ -106,7 +110,7 @@ func (pc *PushClient) Push() {
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
-		return
+		return nil
 	}
 	fmt.Printf("Resp: %v\n\n", resp)
 
@@ -115,7 +119,7 @@ func (pc *PushClient) Push() {
 
 	fmt.Printf("RespBody: %s\n\n", respBody)
 
-	//setHeaders(req, n)
+	return &PushResponse{resp}
 
 	/*
 		httpRes, err := c.requestWithContext(ctx, req)
@@ -168,4 +172,9 @@ func (pc *PushClient) buildHttpClient() {
 		Transport: transport,
 	}
 	pc.httpClient = httpClient
+}
+
+// Methods for PushResponse
+func (pushResp *PushResponse) IsSuccess() bool {
+	return pushResp.httpResp.StatusCode == 200
 }
