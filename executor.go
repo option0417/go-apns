@@ -53,7 +53,7 @@ func main() {
 	// Setup PushClient and do push
 	push.
 		FetchPushClient().
-		Tokens([]string{common.Token_OK}).
+		Tokens([]string{common.TOKEN_OK}).
 		Payload(p).
 		Production().
 		PushType(push.PushTypeAlert).

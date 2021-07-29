@@ -78,39 +78,55 @@ func (pc *PushClient) Development() *PushClient {
 	return pc
 }
 
-func (pc *PushClient) Push() *PushResponse {
-	fmt.Printf("Do Push\n")
-
+func buildRequests(pc *PushClient) []*http.Request {
 	payloadJson, err := json.Marshal(pc.payload.GetContent())
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return nil
+	} else {
+		fmt.Printf("JSON: %v\n\n", string(payloadJson))
 	}
 
-	fmt.Printf("JSON: %v\n\n", string(payloadJson))
-	fmt.Printf("Token: %v\n\n", pc.tokens[0])
+	var reqs []*http.Request = make([]*http.Request, len(pc.tokens))
 
-	url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[0])
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return nil
+	for i := 0; i < len(pc.tokens); i++ {
+		url := fmt.Sprintf("%v/3/device/%v", pc.host, pc.tokens[i])
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadJson))
+		if err != nil {
+			fmt.Printf("Err: %v\n", err)
+			return nil
+		}
+
+		setupHeaders(req, pc)
+		fmt.Printf("Headers: %v\n\n", req.Header)
+		fmt.Printf("Req: %v\n\n", req)
+
+		reqs[i] = req
 	}
+
+	return reqs
+}
+
+func (pc *PushClient) Push() *PushResponse {
+	fmt.Printf("Do Push\n")
 
 	if pc.authToken != "" {
 		//c.setTokenHeader(req)
 		fmt.Printf("AuthToken: %v\n", pc.authToken)
 	}
 
-	setupHeaders(req, pc)
-	fmt.Printf("Headers: %v\n\n", req.Header)
-	fmt.Printf("Req: %v\n\n", req)
-
+	reqs := buildRequests(pc)
 	pc.buildHttpClient()
-	resp, err := pc.httpClient.Do(req)
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return nil
+
+	var resp *http.Response
+
+	for i := 0; i < len(reqs); i++ {
+		resp, err := pc.httpClient.Do(reqs[i])
+		if err != nil {
+			fmt.Printf("Err: %v\n", err)
+			return nil
+		}
+		_ = resp
 	}
 
 	return &PushResponse{resp}

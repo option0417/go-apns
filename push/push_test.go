@@ -12,7 +12,7 @@ func TestSendNotification(t *testing.T) {
 	pushClient := FetchPushClient()
 
 	pushClient.
-		Tokens([]string{common.Token_OK}).
+		Tokens([]string{common.TOKEN_OK, common.TOKEN_OK, common.TOKEN_OK}).
 		Production().
 		PushType(PushTypeAlert).
 		Topic(common.TOPIC).
