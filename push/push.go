@@ -39,10 +39,6 @@ type PushClient struct {
 	httpClient *http.Client
 }
 
-type PushResponse struct {
-	httpResp *http.Response
-}
-
 // Methods for PushClient
 func FetchPushClient() *PushClient {
 	return &PushClient{}
@@ -78,6 +74,50 @@ func (pc *PushClient) Development() *PushClient {
 	return pc
 }
 
+func (pc *PushClient) Push() []*PushResult {
+	fmt.Printf("Do Push\n")
+
+	if pc.authToken != "" {
+		//c.setTokenHeader(req)
+		fmt.Printf("AuthToken: %v\n", pc.authToken)
+	}
+
+	reqs := buildRequests(pc)
+	pc.buildHttpClient()
+
+	var pushResults []*PushResult = make([]*PushResult, len(reqs))
+
+	for i := 0; i < len(reqs); i++ {
+		resp, err := pc.httpClient.Do(reqs[i])
+		if err != nil {
+			fmt.Printf("Err: %v\n", err)
+			return nil
+		}
+		fmt.Printf("%v\n", resp)
+		pushResults[i] = &PushResult{resp}
+	}
+
+	return pushResults
+
+	/*
+		httpRes, err := c.requestWithContext(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		defer httpRes.Body.Close()
+
+		response := &Response{}
+		response.StatusCode = httpRes.StatusCode
+		response.ApnsID = httpRes.Header.Get("apns-id")
+
+		decoder := json.NewDecoder(httpRes.Body)
+		if err := decoder.Decode(&response); err != nil && err != io.EOF {
+			return &Response{}, err
+		}
+		return response, nil
+	*/
+}
+
 func buildRequests(pc *PushClient) []*http.Request {
 	payloadJson, err := json.Marshal(pc.payload.GetContent())
 	if err != nil {
@@ -105,49 +145,6 @@ func buildRequests(pc *PushClient) []*http.Request {
 	}
 
 	return reqs
-}
-
-func (pc *PushClient) Push() *PushResponse {
-	fmt.Printf("Do Push\n")
-
-	if pc.authToken != "" {
-		//c.setTokenHeader(req)
-		fmt.Printf("AuthToken: %v\n", pc.authToken)
-	}
-
-	reqs := buildRequests(pc)
-	pc.buildHttpClient()
-
-	var resp *http.Response
-
-	for i := 0; i < len(reqs); i++ {
-		resp, err := pc.httpClient.Do(reqs[i])
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		_ = resp
-	}
-
-	return &PushResponse{resp}
-
-	/*
-		httpRes, err := c.requestWithContext(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-		defer httpRes.Body.Close()
-
-		response := &Response{}
-		response.StatusCode = httpRes.StatusCode
-		response.ApnsID = httpRes.Header.Get("apns-id")
-
-		decoder := json.NewDecoder(httpRes.Body)
-		if err := decoder.Decode(&response); err != nil && err != io.EOF {
-			return &Response{}, err
-		}
-		return response, nil
-	*/
 }
 
 func setupHeaders(req *http.Request, pc *PushClient) {
@@ -184,14 +181,19 @@ func (pc *PushClient) buildHttpClient() {
 	pc.httpClient = httpClient
 }
 
-// Methods for PushResponse
-func (pushResp *PushResponse) IsSuccess() bool {
-	return pushResp.httpResp.StatusCode == 200
+// PushResult warp http.Respnose for convenient
+type PushResult struct {
+	resp *http.Response
 }
 
-func (pushResp *PushResponse) GetContent() string {
-	defer pushResp.httpResp.Body.Close()
-	respContent, err := ioutil.ReadAll(pushResp.httpResp.Body)
+// Methods for PushResult
+func (pushResult *PushResult) IsSuccess() bool {
+	return pushResult.resp.StatusCode == 200
+}
+
+func (pushResult *PushResult) GetContent() string {
+	defer pushResult.resp.Body.Close()
+	respContent, err := ioutil.ReadAll(pushResult.resp.Body)
 
 	if err != nil {
 		fmt.Printf("Read content error, since %v\n", err)

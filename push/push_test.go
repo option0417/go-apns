@@ -18,12 +18,16 @@ func TestSendNotification(t *testing.T) {
 		Topic(common.TOPIC).
 		Payload(p)
 
-	resp := pushClient.Push()
+	pushResults := pushClient.Push()
 
-	if !resp.IsSuccess() {
-		t.Errorf("Send notification failed, since %s", resp.GetContent())
-	} else {
-		t.Log(resp.GetContent())
+	if pushResults == nil {
+		t.Errorf("Send notification failed, since response is nil")
+	}
+
+	for i := 0; i < len(pushResults); i++ {
+		if !pushResults[i].IsSuccess() {
+			t.Errorf("Send notification failed, since %s", pushResults[i].GetContent())
+		}
 	}
 }
 
@@ -37,11 +41,17 @@ func TestSendNotificationWithWrongToken(t *testing.T) {
 		Topic(common.TOPIC).
 		Payload(p)
 
-	resp := pushClient.Push()
+	pushResults := pushClient.Push()
 
-	if resp.IsSuccess() {
-		t.Errorf("Send notification should fail since empty device-token but get %s", resp.GetContent())
-	} else {
-		t.Log(resp.GetContent())
+	if pushResults == nil {
+		t.Errorf("Send notification failed, since response is nil")
+	}
+
+	for i := 0; i < len(pushResults); i++ {
+		if pushResults[i].IsSuccess() {
+			t.Errorf("Send notification should fail since empty device-token")
+		} else {
+			t.Log(pushResults[i].GetContent())
+		}
 	}
 }
