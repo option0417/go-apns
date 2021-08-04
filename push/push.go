@@ -83,7 +83,10 @@ func (pc *PushClient) Push() []*PushResult {
 	}
 
 	reqs := buildRequests(pc)
-	pc.buildHttpClient()
+
+	if pc.httpClient == nil {
+		pc.buildHttpClient()
+	}
 
 	var pushResults []*PushResult = make([]*PushResult, len(reqs))
 
@@ -94,7 +97,11 @@ func (pc *PushClient) Push() []*PushResult {
 			return nil
 		}
 		fmt.Printf("%v\n", resp)
-		pushResults[i] = &PushResult{resp}
+
+		respContent, err := ioutil.ReadAll(resp.Body)
+
+		pushResults[i] = &PushResult{resp.StatusCode, respContent, resp.Header.Get("Apns-Id")}
+		resp.Body.Close()
 	}
 
 	return pushResults
@@ -183,22 +190,20 @@ func (pc *PushClient) buildHttpClient() {
 
 // PushResult warp http.Respnose for convenient
 type PushResult struct {
-	resp *http.Response
+	respCode    int
+	respContent []byte
+	apnsId      string
 }
 
 // Methods for PushResult
 func (pushResult *PushResult) IsSuccess() bool {
-	return pushResult.resp.StatusCode == 200
+	return pushResult.respCode == 200
 }
 
 func (pushResult *PushResult) GetContent() string {
-	defer pushResult.resp.Body.Close()
-	respContent, err := ioutil.ReadAll(pushResult.resp.Body)
+	return string(pushResult.respContent)
+}
 
-	if err != nil {
-		fmt.Printf("Read content error, since %v\n", err)
-		return ""
-	}
-
-	return string(respContent)
+func (pushResult *PushResult) GetApnsId() string {
+	return pushResult.apnsId
 }
